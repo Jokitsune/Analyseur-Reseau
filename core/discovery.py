@@ -35,3 +35,24 @@ def arp_scan(network=None):
         })
 
     return hosts
+
+from scapy.all import ARP, Ether, srp, IP, ICMP, sr1
+import socket
+
+def icmp_scan(network):
+    hosts = []
+
+    base_ip = network.split('/')[0].rsplit('.', 1)[0]
+
+    for i in range(1, 255):
+        ip = f"{base_ip}.{i}"
+        pkt = IP(dst=ip)/ICMP()
+        resp = sr1(pkt, timeout=1, verbose=0)
+
+        if resp:
+            hosts.append({
+                "ip": ip,
+                "mac": "unknown"
+            })
+
+    return hosts
